@@ -180,6 +180,9 @@ export default function MapView({
         el.style.width = '24px'
         el.style.height = '24px'
         el.style.cursor = 'pointer'
+        el.style.display = 'flex'
+        el.style.alignItems = 'center'
+        el.style.justifyContent = 'center'
         el.innerHTML = createVesselIcon(vessel, isSelected)
         el.addEventListener('click', (e) => {
           e.stopPropagation()
@@ -232,14 +235,17 @@ function createVesselIcon(vessel: VesselInArea, isSelected: boolean): string {
   const color = isSelected ? '#f97316' : '#0284c7'
   const course = parseFloat(vessel.course) || 0
 
+  // Use SVG transform attribute instead of CSS transform to avoid conflicts with Mapbox marker positioning
   return `
-    <svg width="24" height="24" viewBox="0 0 24 24" style="transform: rotate(${course}deg)">
-      <path
-        d="M12 2 L18 20 L12 16 L6 20 Z"
-        fill="${color}"
-        stroke="white"
-        stroke-width="1.5"
-      />
+    <svg width="24" height="24" viewBox="0 0 24 24">
+      <g transform="rotate(${course}, 12, 12)">
+        <path
+          d="M12 2 L18 20 L12 16 L6 20 Z"
+          fill="${color}"
+          stroke="white"
+          stroke-width="1.5"
+        />
+      </g>
     </svg>
   `
 }
