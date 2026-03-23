@@ -18,7 +18,8 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { LogOut, Menu, X, Ship, Bookmark, Radar } from 'lucide-react'
+import { LogOut, Menu, X, Ship, Bookmark, Radar, HelpCircle, Info } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function Dashboard() {
   const { user, loading: authLoading, signOut } = useAuth()
@@ -485,6 +486,18 @@ export default function Dashboard() {
           <h1 className="font-semibold hidden sm:block">Vessel Area Tracker</h1>
         </div>
         <div className="flex items-center gap-2">
+          <Link to="/about">
+            <Button variant="ghost" size="sm">
+              <Info className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">About</span>
+            </Button>
+          </Link>
+          <Link to="/help">
+            <Button variant="ghost" size="sm">
+              <HelpCircle className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Help</span>
+            </Button>
+          </Link>
           <span className="text-sm text-muted-foreground hidden md:block">
             {user?.email}
           </span>

@@ -4,6 +4,8 @@ import { Toaster } from 'sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import Auth from '@/pages/Auth'
 import Dashboard from '@/pages/Dashboard'
+import About from '@/pages/About'
+import Help from '@/pages/Help'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,6 +25,8 @@ function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/help" element={<Help />} />
           </Routes>
         </BrowserRouter>
         <Toaster
