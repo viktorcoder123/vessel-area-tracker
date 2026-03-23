@@ -1,0 +1,1892 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Data Docked Maritime API",
+    "description": "A comprehensive maritime data API providing real-time vessel tracking, port operations, inspection data, and more. Access AIS data, vessel particulars, management information, and historical tracking data.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Data Docked Support",
+      "url": "https://datadocked.com/contact"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://datadocked.com/api/vessels_operations",
+      "description": "Production server"
+    }
+  ],
+  "security": [
+    {
+      "apiKey": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Account",
+      "description": "Account management endpoints"
+    },
+    {
+      "name": "Vessel Operations",
+      "description": "Vessel data, location, and tracking endpoints"
+    },
+    {
+      "name": "Port Operations",
+      "description": "Port calls and port data endpoints"
+    }
+  ],
+  "paths": {
+    "/my-credits": {
+      "get": {
+        "operationId": "getMyCredits",
+        "summary": "My Credits",
+        "description": "Check your remaining API credits balance.",
+        "tags": [
+          "Account"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with credit balance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsResponse"
+                },
+                "example": {
+                  "detail": "99929 credits left."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-vessel-info": {
+      "get": {
+        "operationId": "getVesselInfo",
+        "summary": "Get Vessel Info",
+        "description": "Retrieve comprehensive vessel information including particulars, location, engine data, management details, and port history. Costs 5 credits per request.",
+        "tags": [
+          "Vessel Operations"
+        ],
+        "parameters": [
+          {
+            "name": "imo_or_mmsi",
+            "in": "query",
+            "required": true,
+            "description": "The IMO or MMSI number of the vessel you want to query.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "9247431"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with vessel information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselInfoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid IMO/MMSI format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Vessel not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-vessel-particulars": {
+      "get": {
+        "operationId": "getVesselParticulars",
+        "summary": "Get Vessel Particulars",
+        "description": "Retrieve vessel specifications including dimensions, tonnage, build information, and capacity data. Costs 1 credit per request.",
+        "tags": [
+          "Vessel Operations"
+        ],
+        "parameters": [
+          {
+            "name": "imo_or_mmsi",
+            "in": "query",
+            "required": true,
+            "description": "The IMO or MMSI number of the vessel you want to query.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "9247431"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with vessel particulars",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselParticularsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid IMO/MMSI format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-vessel-location": {
+      "get": {
+        "operationId": "getVesselLocation",
+        "summary": "Get Vessel Location",
+        "description": "Retrieve real-time vessel position including coordinates, speed, course, destination, and navigational status. Costs 1 credit per request.",
+        "tags": [
+          "Vessel Operations"
+        ],
+        "parameters": [
+          {
+            "name": "imo_or_mmsi",
+            "in": "query",
+            "required": true,
+            "description": "The IMO or MMSI number of the vessel you want to query.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "9247431"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with vessel location",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselLocationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid IMO/MMSI format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-vessels-location-bulk-search": {
+      "get": {
+        "operationId": "getVesselsLocationBulkSearch",
+        "summary": "Vessel Location Bulk Search",
+        "description": "Query multiple vessel locations in a single request using comma-separated IMO or MMSI numbers. Maximum 50 vessels per request. Credits charged per vessel queried (1 credit per IMO/MMSI). Based on terrestrial AIS data only.",
+        "tags": [
+          "Vessel Operations"
+        ],
+        "parameters": [
+          {
+            "name": "imo_or_mmsi",
+            "in": "query",
+            "required": true,
+            "description": "Comma-separated list of IMO or MMSI numbers (no spaces). Maximum 50 per request.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "9465411,215767000"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with multiple vessel locations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkLocationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid format or exceeds 50 vessels",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-vessel-engine-data": {
+      "get": {
+        "operationId": "getVesselEngineData",
+        "summary": "Get Vessel Engine Data",
+        "description": "Retrieve vessel engine specifications including fuel type, propeller information, engine type, builder, and power output. Costs 1 credit per request.",
+        "tags": [
+          "Vessel Operations"
+        ],
+        "parameters": [
+          {
+            "name": "imo_or_mmsi",
+            "in": "query",
+            "required": true,
+            "description": "The IMO or MMSI number of the vessel you want to query.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "9247431"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with engine data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselEngineResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid IMO/MMSI format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-vessel-management-data": {
+      "get": {
+        "operationId": "getVesselManagementData",
+        "summary": "Get Vessel Management Data",
+        "description": "Retrieve vessel management information including registered owner, ship manager, ISM manager, P&I club, and classification society. Costs 1 credit per request.",
+        "tags": [
+          "Vessel Operations"
+        ],
+        "parameters": [
+          {
+            "name": "imo_or_mmsi",
+            "in": "query",
+            "required": true,
+            "description": "The IMO or MMSI number of the vessel you want to query.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "9184419"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with management data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselManagementResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid IMO/MMSI format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vessels-by-vessel-name": {
+      "get": {
+        "operationId": "getVesselsByName",
+        "summary": "Vessel Details by Name",
+        "description": "Search for vessels by name and retrieve their IMO, MMSI, and basic specifications. Costs 1 credit per request.",
+        "tags": [
+          "Vessel Operations"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "The name of the vessel you want to query. Spaces in vessel names must be URL encoded as _ (e.g., \"DL ACACIA\" becomes \"DL_ACACIA\").",
+            "schema": {
+              "type": "string"
+            },
+            "example": "DL_ACACIA"
+          },
+          {
+            "name": "page_number",
+            "in": "query",
+            "required": false,
+            "description": "Page number for pagination when multiple vessels share the same name. Defaults to 1.",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with matching vessels",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselsByNameResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid name format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vessel-mou": {
+      "get": {
+        "operationId": "getVesselInspectionData",
+        "summary": "Vessel Inspection Data",
+        "description": "Retrieve comprehensive vessel inspection data including Port State Control (PSC) inspections, classification surveys, certificates, P&I information, and ship history. Costs 3 credits per request.",
+        "tags": [
+          "Vessel Operations"
+        ],
+        "parameters": [
+          {
+            "name": "imo",
+            "in": "query",
+            "required": true,
+            "description": "The IMO number of the vessel you want to query.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "9184419"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with inspection data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselInspectionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid IMO format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-vessel-weather": {
+      "get": {
+        "operationId": "getVesselWeather",
+        "summary": "Vessel Weather Data",
+        "description": "Retrieve current weather conditions at the vessel's location including temperature, wind speed, and wave height. Costs 1 credit per request.",
+        "tags": [
+          "Vessel Operations"
+        ],
+        "parameters": [
+          {
+            "name": "imo",
+            "in": "query",
+            "required": true,
+            "description": "The IMO number of the vessel you want to query.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "8909070"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with weather data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselWeatherResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid IMO format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-vessel-historical-data": {
+      "get": {
+        "operationId": "getVesselHistoricalData",
+        "summary": "Get Historical Vessel Data",
+        "description": "Retrieve historical vessel positions for voyage reconstruction. Returns up to 3000 positions per request. Historical data extends back 2 years. Pricing is based on the number of unique dates in results (5 credits per date). Based on terrestrial AIS data only.",
+        "tags": [
+          "Vessel Operations"
+        ],
+        "parameters": [
+          {
+            "name": "imo_or_mmsi",
+            "in": "query",
+            "required": true,
+            "description": "The IMO or MMSI number of the vessel you want to retrieve historical positions for.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "9321483"
+          },
+          {
+            "name": "from_date",
+            "in": "query",
+            "required": true,
+            "description": "Beginning of the date range in ISO 8601 format.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2026-01-23T00:00:00Z"
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "required": true,
+            "description": "End of the date range in ISO 8601 format.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2026-02-06T23:59:59Z"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with historical positions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoricalDataResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-vessels-by-area": {
+      "get": {
+        "operationId": "getVesselsByArea",
+        "summary": "Get Vessels by Area",
+        "description": "Find all vessels within a specified circular area. Based on terrestrial AIS data only. Costs 10 credits per request.",
+        "tags": [
+          "Vessel Operations"
+        ],
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "required": true,
+            "description": "The center latitude coordinate for the search area (up to 1 decimal place).",
+            "schema": {
+              "type": "number",
+              "format": "float"
+            },
+            "example": 45
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "required": true,
+            "description": "The center longitude coordinate for the search area (up to 1 decimal place).",
+            "schema": {
+              "type": "number",
+              "format": "float"
+            },
+            "example": -9
+          },
+          {
+            "name": "circle_radius",
+            "in": "query",
+            "required": true,
+            "description": "The search radius in kilometers (maximum 50km).",
+            "schema": {
+              "type": "integer",
+              "maximum": 50
+            },
+            "example": 50
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with vessels in area",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VesselInArea"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid coordinates or radius",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/port-calls-by-vessel": {
+      "get": {
+        "operationId": "getPortCallsByVessel",
+        "summary": "Port Calls By Vessel",
+        "description": "Retrieve historical port call data for a specific vessel including arrival/departure times and port information. Costs 1 credit per request.",
+        "tags": [
+          "Port Operations"
+        ],
+        "parameters": [
+          {
+            "name": "imo_or_mmsi",
+            "in": "query",
+            "required": true,
+            "description": "The IMO or MMSI number of the vessel you want to query.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "9184419"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with port calls",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortCallsByVesselResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid IMO/MMSI format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/port-calls-by-port": {
+      "get": {
+        "operationId": "getPortCallsByPort",
+        "summary": "Port Calls By Port",
+        "description": "Retrieve vessel traffic data for a specific port including arrivals, departures, expected vessels, and vessels currently in port. Costs 50 credits per request.",
+        "tags": [
+          "Port Operations"
+        ],
+        "parameters": [
+          {
+            "name": "port_call",
+            "in": "query",
+            "required": true,
+            "description": "The UN/LOCODE of the port you want to query (e.g., ESBCN for Barcelona).",
+            "schema": {
+              "type": "string"
+            },
+            "example": "ESBCN"
+          },
+          {
+            "name": "search_type",
+            "in": "query",
+            "required": true,
+            "description": "The type of search to perform.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "arrival",
+                "departure",
+                "expected",
+                "in_port"
+              ]
+            },
+            "example": "arrival"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": true,
+            "description": "Page number for pagination. Pagination starts with page number 1.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "example": 1
+          },
+          {
+            "name": "vessel_type",
+            "in": "query",
+            "required": false,
+            "description": "Filter results by vessel type.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with port traffic data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortCallsByPortResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid port code or parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your personal API key found in your profile dashboard at https://datadocked.com/dashboard/my_keys"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error type"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      },
+      "CreditsResponse": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "string",
+            "description": "Message indicating remaining credits",
+            "example": "99929 credits left."
+          }
+        }
+      },
+      "VesselInfoResponse": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Vessel name"
+              },
+              "mmsi": {
+                "type": "string",
+                "description": "Maritime Mobile Service Identity"
+              },
+              "imo": {
+                "type": "string",
+                "description": "IMO number"
+              },
+              "country": {
+                "type": "string",
+                "description": "Flag state"
+              },
+              "countryIso": {
+                "type": "string",
+                "description": "ISO country code"
+              },
+              "shipType": {
+                "type": "string",
+                "description": "General vessel type"
+              },
+              "typeSpecific": {
+                "type": "string",
+                "description": "Specific vessel type"
+              },
+              "callsign": {
+                "type": "string",
+                "description": "Radio call sign"
+              },
+              "teu": {
+                "type": "string",
+                "description": "TEU capacity"
+              },
+              "length": {
+                "type": "string",
+                "description": "Vessel length"
+              },
+              "beam": {
+                "type": "string",
+                "description": "Vessel beam/width"
+              },
+              "eni": {
+                "type": "string",
+                "description": "European Number of Identification"
+              },
+              "etaUtc": {
+                "type": "string",
+                "description": "Estimated time of arrival (UTC)"
+              },
+              "deadweight": {
+                "type": "string",
+                "description": "Deadweight tonnage"
+              },
+              "speed": {
+                "type": "string",
+                "description": "Current speed in knots"
+              },
+              "atdUtc": {
+                "type": "string",
+                "description": "Actual time of departure (UTC)"
+              },
+              "latitude": {
+                "type": "string",
+                "description": "Current latitude"
+              },
+              "longitude": {
+                "type": "string",
+                "description": "Current longitude"
+              },
+              "course": {
+                "type": "string",
+                "description": "Course over ground"
+              },
+              "destination": {
+                "type": "string",
+                "description": "Reported destination"
+              },
+              "hull": {
+                "type": "string",
+                "description": "Hull type"
+              },
+              "builder": {
+                "type": "string",
+                "description": "Shipyard/builder name"
+              },
+              "material": {
+                "type": "string",
+                "description": "Hull material"
+              },
+              "placeOfBuild": {
+                "type": "string",
+                "description": "Build location"
+              },
+              "positionReceived": {
+                "type": "string",
+                "description": "Last position update time"
+              },
+              "ballastWater": {
+                "type": "string",
+                "description": "Ballast water capacity"
+              },
+              "crudeOil": {
+                "type": "string",
+                "description": "Crude oil capacity"
+              },
+              "freshWater": {
+                "type": "string",
+                "description": "Fresh water capacity"
+              },
+              "gas": {
+                "type": "string",
+                "description": "Gas capacity"
+              },
+              "grain": {
+                "type": "string",
+                "description": "Grain capacity"
+              },
+              "bale": {
+                "type": "string",
+                "description": "Bale capacity"
+              },
+              "unlocodeDestination": {
+                "type": "string",
+                "description": "UN/LOCODE of destination"
+              },
+              "unlocodeLastport": {
+                "type": "string",
+                "description": "UN/LOCODE of last port"
+              },
+              "lastPort": {
+                "type": "string",
+                "description": "Last port name"
+              },
+              "navigationalStatus": {
+                "type": "string",
+                "description": "AIS navigational status"
+              },
+              "grossTonnage": {
+                "type": "string",
+                "description": "Gross tonnage"
+              },
+              "netTonnage": {
+                "type": "string",
+                "description": "Net tonnage"
+              },
+              "yearOfBuilt": {
+                "type": "string",
+                "description": "Year built"
+              },
+              "engine": {
+                "$ref": "#/components/schemas/EngineData"
+              },
+              "management": {
+                "$ref": "#/components/schemas/ManagementData"
+              },
+              "updateTime": {
+                "type": "string",
+                "description": "Data update timestamp"
+              },
+              "dataSource": {
+                "type": "string",
+                "description": "AIS data source (Terrestrial/Satellite)"
+              }
+            }
+          }
+        }
+      },
+      "VesselParticularsResponse": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "imo": {
+                "type": "string"
+              },
+              "mmsi": {
+                "type": "string"
+              },
+              "countryIso": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              },
+              "shipType": {
+                "type": "string"
+              },
+              "typeSpecific": {
+                "type": "string"
+              },
+              "grossTonnage": {
+                "type": "string"
+              },
+              "netTonnage": {
+                "type": "string"
+              },
+              "teu": {
+                "type": "string"
+              },
+              "length": {
+                "type": "string"
+              },
+              "beam": {
+                "type": "string"
+              },
+              "yearOfBuilt": {
+                "type": "string"
+              },
+              "callsign": {
+                "type": "string"
+              },
+              "eni": {
+                "type": "string"
+              },
+              "deadweight": {
+                "type": "string"
+              },
+              "updateTime": {
+                "type": "string"
+              },
+              "bale": {
+                "type": "string"
+              },
+              "hull": {
+                "type": "string"
+              },
+              "ballastWater": {
+                "type": "string"
+              },
+              "freshWater": {
+                "type": "string"
+              },
+              "crudeOil": {
+                "type": "string"
+              },
+              "gas": {
+                "type": "string"
+              },
+              "grain": {
+                "type": "string"
+              },
+              "builder": {
+                "type": "string"
+              },
+              "material": {
+                "type": "string"
+              },
+              "placeOfBuild": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "VesselLocationResponse": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "imo": {
+                "type": "string"
+              },
+              "mmsi": {
+                "type": "string"
+              },
+              "latitude": {
+                "type": "string"
+              },
+              "longitude": {
+                "type": "string"
+              },
+              "etaUtc": {
+                "type": "string"
+              },
+              "atdUtc": {
+                "type": "string"
+              },
+              "course": {
+                "type": "string"
+              },
+              "heading": {
+                "type": "string"
+              },
+              "speed": {
+                "type": "string"
+              },
+              "draught": {
+                "type": "string"
+              },
+              "navigationalStatus": {
+                "type": "string"
+              },
+              "destination": {
+                "type": "string"
+              },
+              "lastPort": {
+                "type": "string"
+              },
+              "callsign": {
+                "type": "string"
+              },
+              "positionReceived": {
+                "type": "string"
+              },
+              "updateTime": {
+                "type": "string"
+              },
+              "unlocodeDestination": {
+                "type": "string"
+              },
+              "unlocodeLastport": {
+                "type": "string"
+              },
+              "typeSpecific": {
+                "type": "string"
+              },
+              "dataSource": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "BulkLocationResponse": {
+        "type": "object",
+        "properties": {
+          "total_requested": {
+            "type": "integer",
+            "description": "Number of vessels requested"
+          },
+          "successful": {
+            "type": "integer",
+            "description": "Number of vessels found"
+          },
+          "failed": {
+            "type": "integer",
+            "description": "Number of vessels not found"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "imo": {
+                  "type": "string"
+                },
+                "mmsi": {
+                  "type": "string"
+                },
+                "latitude": {
+                  "type": "string"
+                },
+                "longitude": {
+                  "type": "string"
+                },
+                "etaUtc": {
+                  "type": "string"
+                },
+                "atdUtc": {
+                  "type": "string"
+                },
+                "course": {
+                  "type": "string"
+                },
+                "heading": {
+                  "type": "string"
+                },
+                "speed": {
+                  "type": "string"
+                },
+                "draught": {
+                  "type": "string"
+                },
+                "navigationalStatus": {
+                  "type": "string"
+                },
+                "destination": {
+                  "type": "string"
+                },
+                "lastPort": {
+                  "type": "string"
+                },
+                "callsign": {
+                  "type": "string"
+                },
+                "positionReceived": {
+                  "type": "string"
+                },
+                "updateTime": {
+                  "type": "string"
+                },
+                "unlocodeDestination": {
+                  "type": "string"
+                },
+                "unlocodeLastport": {
+                  "type": "string"
+                },
+                "typeSpecific": {
+                  "type": "string"
+                },
+                "dataSource": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "userRequest": {
+            "type": "string",
+            "description": "Original query string"
+          }
+        }
+      },
+      "EngineData": {
+        "type": "object",
+        "properties": {
+          "fuelType": {
+            "type": "string",
+            "description": "Fuel type"
+          },
+          "Propeller": {
+            "type": "string",
+            "description": "Propeller details"
+          },
+          "engineType": {
+            "type": "string",
+            "description": "Engine model"
+          },
+          "engineBuilder": {
+            "type": "string",
+            "description": "Engine manufacturer"
+          },
+          "enginePower(kW)": {
+            "type": "string",
+            "description": "Engine power in kW"
+          }
+        }
+      },
+      "VesselEngineResponse": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "imo": {
+                "type": "string"
+              },
+              "mmsi": {
+                "type": "string"
+              },
+              "engine": {
+                "$ref": "#/components/schemas/EngineData"
+              }
+            }
+          }
+        }
+      },
+      "ManagementData": {
+        "type": "object",
+        "properties": {
+          "P&I": {
+            "type": "string",
+            "description": "P&I club information"
+          },
+          "ism": {
+            "type": "string",
+            "description": "ISM manager"
+          },
+          "ismWeb": {
+            "type": "string",
+            "description": "ISM manager website"
+          },
+          "manager": {
+            "type": "string",
+            "description": "Ship manager"
+          },
+          "ismEmail": {
+            "type": "string",
+            "description": "ISM manager email"
+          },
+          "ismAddress": {
+            "type": "string",
+            "description": "ISM manager address"
+          },
+          "ismWebsite": {
+            "type": "string",
+            "description": "ISM manager website"
+          },
+          "managerEmail": {
+            "type": "string",
+            "description": "Manager email"
+          },
+          "managerAddress": {
+            "type": "string",
+            "description": "Manager address"
+          },
+          "managerWebsite": {
+            "type": "string",
+            "description": "Manager website"
+          },
+          "registeredOwner": {
+            "type": "string",
+            "description": "Registered owner"
+          },
+          "registeredOwnerEmail": {
+            "type": "string",
+            "description": "Owner email"
+          },
+          "ClassificationSociety": {
+            "type": "string",
+            "description": "Classification society"
+          },
+          "registeredOwnerAddress": {
+            "type": "string",
+            "description": "Owner address"
+          },
+          "registeredOwnerWebsite": {
+            "type": "string",
+            "description": "Owner website"
+          }
+        }
+      },
+      "VesselManagementResponse": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "imo": {
+                "type": "string"
+              },
+              "mmsi": {
+                "type": "string"
+              },
+              "management": {
+                "$ref": "#/components/schemas/ManagementData"
+              }
+            }
+          }
+        }
+      },
+      "VesselsByNameResponse": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "Total matching vessels"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "mmsi": {
+                  "type": "string"
+                },
+                "imo": {
+                  "type": "string"
+                },
+                "country": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "callsign": {
+                  "type": "string"
+                },
+                "typespecific": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "VesselInspectionResponse": {
+        "type": "object",
+        "properties": {
+          "status_code": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "object",
+            "properties": {
+              "specs": {
+                "type": "object",
+                "properties": {
+                  "Flag": {
+                    "type": "string"
+                  },
+                  "Call Sign": {
+                    "type": "string"
+                  },
+                  "MMSI": {
+                    "type": "string"
+                  },
+                  "Gross tonnage": {
+                    "type": "string"
+                  },
+                  "DWT": {
+                    "type": "string"
+                  },
+                  "Type of ship": {
+                    "type": "string"
+                  },
+                  "Year of build": {
+                    "type": "string"
+                  },
+                  "Status": {
+                    "type": "string"
+                  },
+                  "last_update": {
+                    "type": "string"
+                  }
+                }
+              },
+              "classification": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "object",
+                    "properties": {
+                      "society": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "since": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "surveys": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "society": {
+                          "type": "string"
+                        },
+                        "last_renewal": {
+                          "type": "string"
+                        },
+                        "next_renewal": {
+                          "type": "string"
+                        },
+                        "external_url": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "certificates": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "pi_info": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "insurer": {
+                      "type": "string"
+                    },
+                    "inception": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "movements": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "date_record": {
+                      "type": "string"
+                    },
+                    "area_seen": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "inspection": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "authority": {
+                      "type": "string"
+                    },
+                    "port_of_inspection": {
+                      "type": "string"
+                    },
+                    "date_of_report": {
+                      "type": "string"
+                    },
+                    "detention": {
+                      "type": "string"
+                    },
+                    "psc_organisation": {
+                      "type": "string"
+                    },
+                    "type_of_inspection": {
+                      "type": "string"
+                    },
+                    "number_of_deficiencies": {
+                      "type": "string"
+                    },
+                    "inspection_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "ship_history": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "VesselWeatherResponse": {
+        "type": "object",
+        "properties": {
+          "status_code": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "MMSI": {
+                "type": "string"
+              },
+              "IMO": {
+                "type": "string"
+              },
+              "temperature": {
+                "type": "string",
+                "description": "Temperature at vessel location"
+              },
+              "windSpeed": {
+                "type": "string",
+                "description": "Wind speed at vessel location"
+              },
+              "waves": {
+                "type": "string",
+                "description": "Wave height at vessel location"
+              }
+            }
+          }
+        }
+      },
+      "HistoricalDataResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "lat": {
+                  "type": "number",
+                  "description": "Latitude"
+                },
+                "lng": {
+                  "type": "number",
+                  "description": "Longitude"
+                },
+                "course": {
+                  "type": "number",
+                  "description": "Course over ground"
+                },
+                "speed": {
+                  "type": "number",
+                  "description": "Speed over ground"
+                },
+                "time": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Position timestamp"
+                }
+              }
+            }
+          }
+        }
+      },
+      "VesselInArea": {
+        "type": "object",
+        "properties": {
+          "mmsi": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "latitude": {
+            "type": "string"
+          },
+          "longitude": {
+            "type": "string"
+          },
+          "speed": {
+            "type": "string"
+          },
+          "course": {
+            "type": "string"
+          },
+          "heading": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "PortCallsByVesselResponse": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "imo": {
+                "type": "string"
+              },
+              "mmsi": {
+                "type": "string"
+              },
+              "ports": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "arrived": {
+                        "type": "string",
+                        "description": "Arrival date/time"
+                      },
+                      "departed": {
+                        "type": "string",
+                        "description": "Departure date/time"
+                      },
+                      "portName": {
+                        "type": "string",
+                        "description": "Port name and country"
+                      },
+                      "portSign": {
+                        "type": "string",
+                        "description": "UN/LOCODE"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "PortCallsByPortResponse": {
+        "type": "object",
+        "properties": {
+          "status_code": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "object",
+            "properties": {
+              "arrival": {
+                "type": "object",
+                "properties": {
+                  "total": {
+                    "type": "integer",
+                    "description": "Total vessels"
+                  },
+                  "pages": {
+                    "type": "integer",
+                    "description": "Total pages"
+                  },
+                  "list": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "mmsi": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "imo": {
+                          "type": "integer"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "year": {
+                          "type": "integer"
+                        },
+                        "country": {
+                          "type": "string"
+                        },
+                        "a2": {
+                          "type": "string",
+                          "description": "Country code"
+                        },
+                        "gt": {
+                          "type": "integer",
+                          "description": "Gross tonnage"
+                        },
+                        "dw": {
+                          "type": "integer",
+                          "description": "Deadweight"
+                        },
+                        "sa": {
+                          "type": "boolean",
+                          "description": "Ship active"
+                        },
+                        "sizes": {
+                          "type": "string",
+                          "description": "Dimensions"
+                        },
+                        "formattedETA": {
+                          "type": "string",
+                          "description": "Formatted ETA"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
