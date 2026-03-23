@@ -55,15 +55,29 @@ export default function Auth() {
   const handleSignup = async (data: AuthFormData) => {
     setIsLoading(true)
     try {
-      await signUp(data.email, data.password)
-      toast({
-        title: 'Account created',
-        description: 'Please check your email to verify your account.',
-      })
+      const result = await signUp(data.email, data.password)
+
+      // Check if user already exists (Supabase returns user with empty identities array)
+      if (result.user && result.user.identities && result.user.identities.length === 0) {
+        toast({
+          title: 'Account already exists',
+          description: 'An account with this email already exists. Please sign in instead.',
+          variant: 'destructive',
+        })
+        return
+      }
+
+      toast({ title: 'Account created!' })
+      navigate('/dashboard')
     } catch (error: any) {
+      // Handle specific error messages
+      let message = error.message
+      if (message.includes('already registered')) {
+        message = 'An account with this email already exists. Please sign in instead.'
+      }
       toast({
         title: 'Signup failed',
-        description: error.message,
+        description: message,
         variant: 'destructive',
       })
     } finally {
