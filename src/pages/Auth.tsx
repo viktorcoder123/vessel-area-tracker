@@ -298,6 +298,9 @@ export default function Auth() {
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
+              <p className="text-xs text-muted-foreground text-center mt-3">
+                This account is separate from your datadocked.com account.
+              </p>
             </CardHeader>
 
             <CardContent>
