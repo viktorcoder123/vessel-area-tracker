@@ -130,19 +130,37 @@ export default function AreaMonitor({
   }
 
   const handleExportCSV = () => {
-    const headers = ['MMSI', 'Name', 'Latitude', 'Longitude', 'Speed (kn)', 'Course', 'Spotted At']
+    const headers = [
+      'MMSI',
+      'Name',
+      'Latitude',
+      'Longitude',
+      'Speed (kn)',
+      'Course (deg)',
+      'Heading (deg)',
+      'Spotted At (UTC)',
+      'Area Name',
+      'Area Latitude',
+      'Area Longitude',
+      'Area Radius (km)',
+    ]
     const rows = filteredSightings.map((s) => [
       s.mmsi,
-      s.name || 'Unknown',
-      s.latitude?.toFixed(4) || '',
-      s.longitude?.toFixed(4) || '',
+      `"${(s.name || 'Unknown').replace(/"/g, '""')}"`,
+      s.latitude?.toFixed(6) || '',
+      s.longitude?.toFixed(6) || '',
       s.speed?.toFixed(1) || '',
-      s.course?.toFixed(0) || '',
+      s.course?.toFixed(1) || '',
+      s.heading?.toFixed(1) || '',
       new Date(s.spotted_at).toISOString(),
+      `"${area.name.replace(/"/g, '""')}"`,
+      area.latitude.toFixed(6),
+      area.longitude.toFixed(6),
+      area.radius_km.toString(),
     ])
 
     const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n')
-    const blob = new Blob([csv], { type: 'text/csv' })
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
