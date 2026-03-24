@@ -13,6 +13,34 @@ interface MapViewProps {
   isSelectingArea: boolean
 }
 
+// Create vessel arrow icon as a data URL for use with Mapbox symbols
+function createVesselImage(color: string): HTMLImageElement {
+  const size = 32
+  const canvas = document.createElement('canvas')
+  canvas.width = size
+  canvas.height = size
+  const ctx = canvas.getContext('2d')!
+
+  // Draw arrow pointing up (north) - rotation will be handled by Mapbox
+  ctx.translate(size / 2, size / 2)
+  ctx.beginPath()
+  ctx.moveTo(0, -12)  // top point
+  ctx.lineTo(6, 8)    // bottom right
+  ctx.lineTo(0, 4)    // bottom center notch
+  ctx.lineTo(-6, 8)   // bottom left
+  ctx.closePath()
+
+  ctx.fillStyle = color
+  ctx.fill()
+  ctx.strokeStyle = 'white'
+  ctx.lineWidth = 1.5
+  ctx.stroke()
+
+  const img = new Image(size, size)
+  img.src = canvas.toDataURL()
+  return img
+}
+
 export default function MapView({
   vessels,
   selectedVessel,
@@ -24,13 +52,19 @@ export default function MapView({
 }: MapViewProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
-  const markersRef = useRef<Map<string, mapboxgl.Marker>>(new Map())
   const areaCircleRef = useRef<string | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
+  const vesselsRef = useRef<VesselInArea[]>(vessels)
+
+  // Keep vessels ref updated for click handler
+  useEffect(() => {
+    vesselsRef.current = vessels
+  }, [vessels])
 
   // Use refs to track current values for click handler
   const isSelectingAreaRef = useRef(isSelectingArea)
   const onAreaSelectRef = useRef(onAreaSelect)
+  const onVesselSelectRef = useRef(onVesselSelect)
 
   // Keep refs updated
   useEffect(() => {
@@ -40,6 +74,10 @@ export default function MapView({
   useEffect(() => {
     onAreaSelectRef.current = onAreaSelect
   }, [onAreaSelect])
+
+  useEffect(() => {
+    onVesselSelectRef.current = onVesselSelect
+  }, [onVesselSelect])
 
   const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN
 
@@ -60,11 +98,77 @@ export default function MapView({
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
 
     map.current.on('load', () => {
-      setMapLoaded(true)
+      if (!map.current) return
 
       // Custom water and land colors
-      map.current?.setPaintProperty('water', 'fill-color', '#a8d5e5')
-      map.current?.setPaintProperty('land', 'background-color', '#f5f0e8')
+      map.current.setPaintProperty('water', 'fill-color', '#a8d5e5')
+      map.current.setPaintProperty('land', 'background-color', '#f5f0e8')
+
+      // Add vessel images
+      const defaultImg = createVesselImage('#0284c7')
+      const selectedImg = createVesselImage('#f97316')
+
+      defaultImg.onload = () => {
+        if (map.current && !map.current.hasImage('vessel-default')) {
+          map.current.addImage('vessel-default', defaultImg, { sdf: false })
+        }
+      }
+
+      selectedImg.onload = () => {
+        if (map.current && !map.current.hasImage('vessel-selected')) {
+          map.current.addImage('vessel-selected', selectedImg, { sdf: false })
+        }
+      }
+
+      // Add empty vessel source
+      map.current.addSource('vessels', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [],
+        },
+      })
+
+      // Add vessel layer
+      map.current.addLayer({
+        id: 'vessels-layer',
+        type: 'symbol',
+        source: 'vessels',
+        layout: {
+          'icon-image': ['case', ['get', 'selected'], 'vessel-selected', 'vessel-default'],
+          'icon-size': 0.75,
+          'icon-rotate': ['get', 'course'],
+          'icon-rotation-alignment': 'map',
+          'icon-allow-overlap': true,
+          'icon-ignore-placement': true,
+        },
+      })
+
+      // Click handler for vessels
+      map.current.on('click', 'vessels-layer', (e) => {
+        if (e.features && e.features.length > 0) {
+          const mmsi = e.features[0].properties?.mmsi
+          const vessel = vesselsRef.current.find((v) => v.mmsi === mmsi)
+          if (vessel) {
+            onVesselSelectRef.current(vessel)
+          }
+        }
+      })
+
+      // Change cursor on hover
+      map.current.on('mouseenter', 'vessels-layer', () => {
+        if (map.current) {
+          map.current.getCanvas().style.cursor = 'pointer'
+        }
+      })
+
+      map.current.on('mouseleave', 'vessels-layer', () => {
+        if (map.current && !isSelectingAreaRef.current) {
+          map.current.getCanvas().style.cursor = ''
+        }
+      })
+
+      setMapLoaded(true)
     })
 
     map.current.on('click', (e) => {
@@ -74,8 +178,6 @@ export default function MapView({
     })
 
     return () => {
-      markersRef.current.forEach((marker) => marker.remove())
-      markersRef.current.clear()
       map.current?.remove()
     }
   }, [mapboxToken])
@@ -145,61 +247,39 @@ export default function MapView({
     })
   }, [areaCenter, areaRadius, mapLoaded])
 
-  // Update vessel markers
+  // Update vessel data
   useEffect(() => {
     if (!map.current || !mapLoaded) return
 
-    // Remove markers for vessels no longer in the list
-    const currentMMSIs = new Set(vessels.map((v) => v.mmsi))
-    markersRef.current.forEach((marker, mmsi) => {
-      if (!currentMMSIs.has(mmsi)) {
-        marker.remove()
-        markersRef.current.delete(mmsi)
-      }
-    })
+    const source = map.current.getSource('vessels') as mapboxgl.GeoJSONSource
+    if (!source) return
 
-    // Add or update markers
-    vessels.forEach((vessel) => {
+    const features: GeoJSON.Feature<GeoJSON.Point>[] = vessels.map((vessel) => {
       const lat = parseFloat(vessel.latitude)
       const lng = parseFloat(vessel.longitude)
-      if (isNaN(lat) || isNaN(lng)) return
-
+      const course = parseFloat(vessel.course) || 0
       const isSelected = selectedVessel?.mmsi === vessel.mmsi
 
-      if (markersRef.current.has(vessel.mmsi)) {
-        // Update existing marker
-        const marker = markersRef.current.get(vessel.mmsi)!
-        marker.setLngLat([lng, lat])
-        const el = marker.getElement()
-        el.className = `vessel-marker ${isSelected ? 'selected' : ''}`
-        el.innerHTML = createVesselIcon(vessel, isSelected)
-      } else {
-        // Create new marker
-        const el = document.createElement('div')
-        el.className = `vessel-marker ${isSelected ? 'selected' : ''}`
-        el.style.width = '24px'
-        el.style.height = '24px'
-        el.style.cursor = 'pointer'
-        el.style.display = 'flex'
-        el.style.alignItems = 'center'
-        el.style.justifyContent = 'center'
-        el.innerHTML = createVesselIcon(vessel, isSelected)
-        el.addEventListener('click', (e) => {
-          e.stopPropagation()
-          onVesselSelect(isSelected ? null : vessel)
-        })
-
-        const marker = new mapboxgl.Marker({
-          element: el,
-          anchor: 'center'
-        })
-          .setLngLat([lng, lat])
-          .addTo(map.current!)
-
-        markersRef.current.set(vessel.mmsi, marker)
+      return {
+        type: 'Feature' as const,
+        properties: {
+          mmsi: vessel.mmsi,
+          name: vessel.name,
+          course: course,
+          selected: isSelected,
+        },
+        geometry: {
+          type: 'Point' as const,
+          coordinates: [lng, lat],
+        },
       }
+    }).filter((f) => !isNaN(f.geometry.coordinates[0]) && !isNaN(f.geometry.coordinates[1]))
+
+    source.setData({
+      type: 'FeatureCollection',
+      features,
     })
-  }, [vessels, selectedVessel, mapLoaded, onVesselSelect])
+  }, [vessels, selectedVessel, mapLoaded])
 
   // Fly to selected vessel
   useEffect(() => {
@@ -229,25 +309,6 @@ export default function MapView({
   }
 
   return <div ref={mapContainer} className="h-full w-full" />
-}
-
-function createVesselIcon(vessel: VesselInArea, isSelected: boolean): string {
-  const color = isSelected ? '#f97316' : '#0284c7'
-  const course = parseFloat(vessel.course) || 0
-
-  // Use SVG transform attribute instead of CSS transform to avoid conflicts with Mapbox marker positioning
-  return `
-    <svg width="24" height="24" viewBox="0 0 24 24">
-      <g transform="rotate(${course}, 12, 12)">
-        <path
-          d="M12 2 L18 20 L12 16 L6 20 Z"
-          fill="${color}"
-          stroke="white"
-          stroke-width="1.5"
-        />
-      </g>
-    </svg>
-  `
 }
 
 function createCircleGeoJSON(
